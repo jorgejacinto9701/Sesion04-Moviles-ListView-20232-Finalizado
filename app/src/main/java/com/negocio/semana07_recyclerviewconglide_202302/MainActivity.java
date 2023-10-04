@@ -12,10 +12,28 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.negocio.semana07_recyclerviewconglide_202302.adapter.ProductoAdapter;
+import com.negocio.semana07_recyclerviewconglide_202302.entity.Producto;
+import com.negocio.semana07_recyclerviewconglide_202302.service.ServiceProducto;
+import com.negocio.semana07_recyclerviewconglide_202302.util.ConnectionRest;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MainActivity extends AppCompatActivity {
 
+    Button btnListar;
+
+    ListView lstProductos;
+    ArrayList<Producto> data = new ArrayList<>();
+    ProductoAdapter adapatador;
+
+    ServiceProducto serviceProducto;
 
 
     @Override
@@ -23,10 +41,44 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        btnListar = findViewById(R.id.btnLista);
+
+        lstProductos = findViewById(R.id.lstProductos);
+        adapatador = new ProductoAdapter(this, R.layout.activity_item_producto, data);
+        lstProductos.setAdapter(adapatador);
+
+        serviceProducto = ConnectionRest.getConnection().create(ServiceProducto.class);
+
+        btnListar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listaProductos();
+            }
+        });
+
+    }
+    public void listaProductos(){
+        Call<List<Producto>> call = serviceProducto.listaProducto();
+        call.enqueue(new Callback<List<Producto>>() {
+            @Override
+            public void onResponse(Call<List<Producto>> call, Response<List<Producto>> response) {
+                if (response.isSuccessful()){
+                    List<Producto> lstSalida = response.body();
+                    //mensajeAlert(""+lstSalida.size());
+                    data.clear();;
+                    data.addAll(lstSalida);
+                    adapatador.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Producto>> call, Throwable t) {
+
+            }
+        });
 
 
     }
-
 
 
     public void mensajeAlert(String msg){

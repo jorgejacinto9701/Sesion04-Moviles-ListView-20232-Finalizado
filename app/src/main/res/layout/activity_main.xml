@@ -26,12 +26,9 @@
         android:text="Listar"
         />
 
-    <LinearLayout
+    <ListView
+        android:id="@+id/lstProductos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
-
-
-    </LinearLayout>
-
+        />
 </androidx.appcompat.widget.LinearLayoutCompat>
